@@ -83,3 +83,4 @@ The free CPU tier has 16 GB of RAM, which fits every model listed here.
   (semantic routing, PII redaction, NLI groundedness) and a red-team suite that cut attack success from [p]% to [q]%.
 - Implemented a Transformer encoder-decoder and a GPT from scratch in PyTorch, plus CYK parsing, Lesk/BERT word-sense disambiguation, and
   noisy-channel spelling correction.
+  
