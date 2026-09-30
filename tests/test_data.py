@@ -2,7 +2,7 @@ import json
 
 from reviewsense.config import get_settings
 from reviewsense.data import Review, load_reviews, load_sample, load_yelp_open_dataset
-
+from reviewsense.data import Review, clean, load_sample, split_sentences
 
 def test_sample_loads():
     reviews = load_sample()
@@ -34,3 +34,23 @@ def test_load_reviews_uses_yelp_when_configured(tmp_path, monkeypatch):
         assert [r.business for r in load_reviews()] == ["Cafe X"]
     finally:
         get_settings.cache_clear()
+
+
+
+
+def test_clean_html_entities_and_mojibake():
+    assert clean("<p>Caf\u00c3\u00a9 was <b>great</b> &amp; cheap</p>\n\n  ok") == "Café was great & cheap ok"
+    assert clean("great<br/>food") == "great food"                        # tags become spaces, words don't merge
+    assert clean("I said \u00e2\u20ac\u0153wow\u00e2\u20ac\u009d") == 'I said "wow"'  # mojibake repaired, quotes straightened
+
+
+def test_clean_leaves_plain_text_alone():
+    assert clean("5 < 6 and the pho was good") == "5 < 6 and the pho was good"
+
+
+def test_sentences_hard_cases():
+    assert split_sentences("Dr. Li paid $4.50. It was great! Yes.") == ["Dr. Li paid $4.50.", "It was great!", "Yes."]
+    assert split_sentences('He said "Great food." Then left.') == ['He said "Great food."', "Then left."]
+    assert split_sentences("Wow!!! Would go again... Yes.") == ["Wow!!!", "Would go again...", "Yes."]
+    assert split_sentences("i loved it. the soup was great.") == ["i loved it.", "the soup was great."]
+
