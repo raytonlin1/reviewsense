@@ -50,7 +50,7 @@ class Settings(BaseSettings):
     # 1.5B over 0.5B: on 6 hard RAG questions 0.5B gave 2 wrong answers, 1.5B none (0.5-2.3 s/answer on CPU)
     llm_model: str = "Qwen/Qwen2.5-1.5B-Instruct"
     llm_api_base: str | None = None
-    llm_adapter: Path | None = None           # LoRA/DPO adapter produced by llm/finetune_lora.py or llm/dpo.py
+    # fine-tuned models: point llm_model at the merged directory written by llm/finetune_lora.py or llm/dpo.py
     llm_max_new_tokens: int = 256
 
     # ---- safety

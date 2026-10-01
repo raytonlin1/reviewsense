@@ -1,0 +1,7 @@
+# TF-IDF (1-2 grams) + logistic regression. 18 s on a laptop; the bar every transformer run must beat.
+# Measured (20k reviews, 2k test): accuracy 0.573, off-by-one 0.929, star MAE 0.60, macro-F1 0.570
+baseline: true
+n_train: 20000
+n_test: 2000
+export_dir: artifacts/tfidf-baseline            # release artifact: gated, registered, deployed
+

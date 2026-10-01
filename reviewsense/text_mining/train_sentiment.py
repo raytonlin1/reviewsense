@@ -1,32 +1,51 @@
-#script with two models:
-#A baseline: TF-IDF + logistic regression (scikit-learn), which trains in seconds.
-#Fine-tuned BERT: trained with the Hugging Face Trainer, on a proper train / validation / test split.
+"""Predict Yelp star ratings (1-5) from review text: a TF-IDF baseline or a fine-tuned transformer (HF Trainer).
 
-"""Predict Yelp star ratings (1-5) from review text: a TF-IDF baseline, then a fine-tuned BERT (Hugging Face Trainer).
+Every experiment is a YAML file in configs/sentiment/ (reviewed in pull requests); any key can be overridden on the CLI:
+  python -m reviewsense.text_mining.train_sentiment --config configs/sentiment/tfidf-baseline.yaml
+  python -m reviewsense.text_mining.train_sentiment --config configs/sentiment/distilbert-20k.yaml
+  python -m reviewsense.text_mining.train_sentiment --config configs/sentiment/distilbert-20k.yaml --learning_rate 3e-5
+  python -m reviewsense.text_mining.train_sentiment --config configs/sentiment/distilbert-20k.yaml --resume true   # after a crash
+Then gate the release against the baseline (exit code 1 = not significantly better):
+  python -m experiments.significance artifacts/tfidf-baseline artifacts/distilbert-20k --gate
 
-  python -m reviewsense.text_mining.train_sentiment --baseline --n_train 20000          # seconds, any machine
-  python -m reviewsense.text_mining.train_sentiment --n_train 20000 --epochs 2          # BERT; GPU recommended
-  python -m reviewsense.text_mining.train_sentiment --model distilbert-base-uncased --n_train 2000 --epochs 1   # CPU smoke test
-  python -m experiments.significance artifacts/tfidf-yelp/eval.json artifacts/bert-yelp/eval.json
-
-Data: train split -> 90% train / 10% validation (model selection), the official test split is scored ONCE at the end.
-Afterwards point the app at the model:  REVIEWSENSE_SENTIMENT_MODEL=artifacts/bert-yelp
+Configuration = TaskArgs (below: data and model choice) + transformers.TrainingArguments (all ~100 training
+hyperparameters, documented by Hugging Face). Data: the train split is divided into train / validation (model
+selection); the official test split is scored exactly once.
 """
 from __future__ import annotations
 
-import argparse
 import json
-import shutil
+import logging
+import sys
+from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
 from scipy.special import softmax
 from sklearn.metrics import f1_score
 
-from ..config import get_settings
 from ..data import load_hf_yelp
+from ..runinfo import write_run_record
 
+log = logging.getLogger(__name__)
 LABELS = {i: f"{i + 1} star{'s' if i else ''}" for i in range(5)}      # same label names as the nlptown model
+DATASET = "Yelp/yelp_review_full"
+
+
+@dataclass
+class TaskArgs:
+    model_name_or_path: str = "bert-base-uncased"
+    export_dir: str = "artifacts/sentiment-model"   # the release artifact (model + card + run.json + eval.json);
+                                                    # TrainingArguments.output_dir holds resumable checkpoints only
+    baseline: bool = False                     # TF-IDF + logistic regression instead of a transformer
+    n_train: int = 20000                       # sampled from the train split, then divided into train / validation
+    n_test: int = 2000                         # sampled from the official test split
+    val_fraction: float = 0.1
+    max_length: int = 256                      # tokens; attention cost grows with the square of this
+    split_seed: int = 42                       # train/validation split (must not clash with TrainingArguments.data_seed)
+    tfidf_max_features: int = 200_000          # baseline only
+    logreg_c: float = 4.0                      # baseline only (inverse regularisation strength)
+    resume: bool = False                       # continue from the latest checkpoint in output_dir after a crash
 
 
 def star_metrics(labels: np.ndarray, probs: np.ndarray) -> dict:
@@ -39,83 +58,62 @@ def star_metrics(labels: np.ndarray, probs: np.ndarray) -> dict:
             "macro_f1": float(f1_score(labels, preds, average="macro"))}
 
 
-def save_eval(out_dir: str | Path, metrics: dict, labels: np.ndarray, probs: np.ndarray) -> None:
-    """Per-example predictions next to the model, so any two runs can be compared with experiments/significance.py."""
-    out = Path(out_dir)
-    out.mkdir(parents=True, exist_ok=True)
-    (out / "eval.json").write_text(json.dumps({**metrics, "preds": probs.argmax(-1).tolist(), "gold": labels.tolist()}))
+def splits(task: TaskArgs):
+    train = load_hf_yelp("train", task.n_train).train_test_split(test_size=task.val_fraction, seed=task.split_seed)
+    return train["train"], train["test"], load_hf_yelp("test", task.n_test)
 
 
-def splits(n_train: int, n_test: int, seed: int = 42):
-    train = load_hf_yelp("train", n_train).train_test_split(test_size=0.1, seed=seed)
-    return train["train"], train["test"], load_hf_yelp("test", n_test)
-
-
-def run_baseline(args) -> dict:
+def run_baseline(task: TaskArgs, args) -> dict:
     from sklearn.feature_extraction.text import TfidfVectorizer
     from sklearn.linear_model import LogisticRegression
     from sklearn.pipeline import make_pipeline
 
-    train, _, test = splits(args.n_train, args.n_eval)
-    model = make_pipeline(TfidfVectorizer(ngram_range=(1, 2), min_df=2, sublinear_tf=True, max_features=200_000),
-                          LogisticRegression(max_iter=2000, C=4.0))
+    train, _, test = splits(task)
+    model = make_pipeline(TfidfVectorizer(ngram_range=(1, 2), min_df=2, sublinear_tf=True, max_features=task.tfidf_max_features),
+                          LogisticRegression(max_iter=2000, C=task.logreg_c))
     model.fit(train["text"], train["label"])
     probs, labels = model.predict_proba(test["text"]), np.array(test["label"])
     metrics = star_metrics(labels, probs)
-    save_eval(args.out, metrics, labels, probs)
+    write_run_record(task.export_dir, {"task": task}, metrics, labels, probs.argmax(-1))
     return metrics
 
 
-def run_bert(args) -> dict:
-    import torch
-    from transformers import (AutoModelForSequenceClassification, AutoTokenizer, DataCollatorWithPadding, Trainer,
-                              TrainingArguments)
+def run_transformer(task: TaskArgs, args) -> dict:
+    from transformers import AutoModelForSequenceClassification, AutoTokenizer, DataCollatorWithPadding, Trainer
 
-    tok = AutoTokenizer.from_pretrained(args.model)
-    enc = lambda b: tok(b["text"], truncation=True, max_length=args.max_len)
-    train, val, test = (d.map(enc, batched=True, remove_columns=["text"]) for d in splits(args.n_train, args.n_eval))
+    tok = AutoTokenizer.from_pretrained(task.model_name_or_path)
+    enc = lambda b: tok(b["text"], truncation=True, max_length=task.max_length)
+    train, val, test = (d.map(enc, batched=True, remove_columns=["text"]) for d in splits(task))
     model = AutoModelForSequenceClassification.from_pretrained(
-        args.model, num_labels=5, id2label=LABELS, label2id={v: k for k, v in LABELS.items()})
-    cuda = torch.cuda.is_available()
-    trainer = Trainer(
-        model=model,
-        args=TrainingArguments(
-            output_dir=str(Path(args.out) / "checkpoints"), learning_rate=args.lr, num_train_epochs=args.epochs,
-            per_device_train_batch_size=args.bs, per_device_eval_batch_size=args.bs * 2,
-            warmup_steps=0.06, weight_decay=0.01, lr_scheduler_type="linear",
-            eval_strategy="epoch", save_strategy="epoch", save_total_limit=1,
-            load_best_model_at_end=True, metric_for_best_model="macro_f1",       # selected on VALIDATION, not test
-            bf16=cuda and torch.cuda.is_bf16_supported(), use_cpu=args.cpu,
-            logging_steps=50, report_to="none", seed=42),
-        train_dataset=train, eval_dataset=val, processing_class=tok, data_collator=DataCollatorWithPadding(tok),
-        compute_metrics=lambda p: star_metrics(p.label_ids, softmax(p.predictions, axis=-1)))
-    trainer.train()
-    trainer.save_model(args.out)
-    shutil.rmtree(Path(args.out) / "checkpoints", ignore_errors=True)    # optimizer state: only needed to resume
-    pred = trainer.predict(test)                                            # the one and only look at the test set
-    probs, labels = softmax(pred.predictions, axis=-1), pred.label_ids
+        task.model_name_or_path, num_labels=5, id2label=LABELS, label2id={v: k for k, v in LABELS.items()})
+    trainer = Trainer(model=model, args=args, train_dataset=train, eval_dataset=val, processing_class=tok,
+                      data_collator=DataCollatorWithPadding(tok),
+                      compute_metrics=lambda p: star_metrics(p.label_ids, softmax(p.predictions, axis=-1)))
+    trainer.train(resume_from_checkpoint=task.resume)
+    trainer.save_model(task.export_dir)                                     # best checkpoint (validation) -> export
+    trainer.args.output_dir = task.export_dir                               # model card is written to output_dir
+    trainer.create_model_card(model_name=Path(task.export_dir).name, finetuned_from=task.model_name_or_path,
+                              tasks="text-classification", dataset=DATASET)
+    pred = trainer.predict(test, metric_key_prefix="test")                  # the one and only look at the test set
+    labels, probs = pred.label_ids, softmax(pred.predictions, axis=-1)
     metrics = star_metrics(labels, probs)
-    save_eval(args.out, metrics, labels, probs)
+    write_run_record(task.export_dir, {"task": task, "training_args": args}, metrics, labels, probs.argmax(-1))
     return metrics
 
 
-def main():
-    s = get_settings()
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--baseline", action="store_true", help="TF-IDF + logistic regression instead of BERT")
-    ap.add_argument("--model", default=s.sentiment_base)
-    ap.add_argument("--n_train", type=int, default=20000)
-    ap.add_argument("--n_eval", type=int, default=2000, help="examples from the official test split")
-    ap.add_argument("--epochs", type=float, default=2)
-    ap.add_argument("--bs", type=int, default=16)
-    ap.add_argument("--lr", type=float, default=2e-5)
-    ap.add_argument("--max_len", type=int, default=256)
-    ap.add_argument("--cpu", action="store_true", help="force CPU (default: CUDA, else Apple MPS, else CPU)")
-    ap.add_argument("--out", default=None)
-    args = ap.parse_args()
-    args.out = args.out or str(s.artifacts_dir / ("tfidf-yelp" if args.baseline else "bert-yelp"))
-    metrics = run_baseline(args) if args.baseline else run_bert(args)
-    print(json.dumps({k: round(v, 4) for k, v in metrics.items()}))
+def main(argv: list[str] | None = None) -> dict:
+    import torch
+    from transformers import TrainingArguments
+    from trl import TrlParser
+
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
+    argv = list(sys.argv[1:] if argv is None else argv)
+    if not torch.cuda.is_available():
+        argv += ["--bf16", "false"]          # bf16 only pays off on recent NVIDIA GPUs; parsed so it applies at construction
+    task, args = TrlParser((TaskArgs, TrainingArguments)).parse_args_and_config(argv)
+    metrics = run_baseline(task, args) if task.baseline else run_transformer(task, args)
+    log.info("test metrics %s -> %s", json.dumps({k: round(v, 4) for k, v in metrics.items()}), task.export_dir)
+    return metrics
 
 
 if __name__ == "__main__":

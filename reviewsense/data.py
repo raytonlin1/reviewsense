@@ -1,14 +1,9 @@
-"""Data layer: one Review type and a loader for each source.
+"""Data layer: one Review type, loaders for each source, text cleaning, sentence splitting.
 
 Sources: Yelp Open Dataset JSON (has business names) > HF `Yelp/yelp_review_full` (training) > data/sample_reviews.jsonl.
 """
 from __future__ import annotations
 
-import json
-from dataclasses import dataclass, field
-from pathlib import Path
-
-from .config import get_settings
 import json
 from dataclasses import dataclass, field
 from functools import lru_cache
@@ -18,6 +13,7 @@ import ftfy
 from bs4 import BeautifulSoup
 
 from .config import get_settings
+
 
 @dataclass
 class Review:
@@ -59,12 +55,16 @@ def load_hf_yelp(split: str = "train", n: int | None = None):
 
     ds = load_dataset("Yelp/yelp_review_full", split=split)
     return ds.shuffle(seed=42).select(range(n)) if n else ds
+
+
 def clean(text: str) -> str:
     """Strip HTML, fix mojibake ("CafÃ©" -> "Café"), collapse whitespace. ftfy also normalises curly quotes to
     straight ones (uncurl_quotes=True), so "“wow”" and "\"wow\"" match the same search terms."""
     if "<" in text:
         text = BeautifulSoup(text, "html.parser").get_text(" ")
     return " ".join(ftfy.fix_text(text).split())
+
+
 @lru_cache
 def _sentencizer():
     """spaCy's trained sentence segmenter ("senter") without the parser/NER: measured on 12 hard cases
@@ -81,4 +81,3 @@ def _sentencizer():
 
 def split_sentences(text: str) -> list[str]:
     return [s.text.strip() for s in _sentencizer()(text).sents if s.text.strip()]
-

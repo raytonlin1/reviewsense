@@ -1,0 +1,18 @@
+# Seconds-long end-to-end check of the training path (CI / after dependency upgrades). Metrics are meaningless.
+model_name_or_path: distilbert-base-uncased
+n_train: 200
+n_test: 100
+max_length: 64
+export_dir: artifacts/sentiment-smoke            # release artifact: gated, registered, deployed
+output_dir: artifacts/checkpoints/sentiment-smoke   # resumable checkpoints (full optimizer state); safe to delete
+max_steps: 4
+per_device_train_batch_size: 16
+eval_strategy: steps
+eval_steps: 4
+save_strategy: steps
+save_steps: 4
+save_total_limit: 1
+load_best_model_at_end: true
+metric_for_best_model: macro_f1
+report_to: none
+seed: 42

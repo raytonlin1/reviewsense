@@ -20,7 +20,6 @@ symspellpy>=6.10,<7                   # query spelling correction
 ranx>=0.3.21,<0.4                     # IR metrics + significance tests
 # ---- linguistics / text
 spacy>=3.8.16,<4                      # + python -m spacy download en_core_web_sm
-pysbd>=0.3.4,<0.4                     # sentence boundary detection
 ftfy>=6.3,<7                          # mojibake repair
 beautifulsoup4>=4.15,<5               # HTML stripping
 sumy>=0.13,<0.14                      # LexRank summaries (+ nltk punkt_tab data)

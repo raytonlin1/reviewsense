@@ -1,0 +1,22 @@
+# Full BERT-base for a GPU (e.g. Colab T4, SageMaker ml.g5.xlarge). Not yet measured in this project.
+model_name_or_path: bert-base-uncased
+n_train: 50000
+n_test: 5000
+max_length: 256
+export_dir: artifacts/bert-base            # release artifact: gated, registered, deployed
+output_dir: artifacts/checkpoints/bert-base   # resumable checkpoints (full optimizer state); safe to delete
+learning_rate: 2.0e-5
+num_train_epochs: 3
+per_device_train_batch_size: 32
+per_device_eval_batch_size: 64
+warmup_steps: 0.06
+weight_decay: 0.01
+eval_strategy: epoch
+save_strategy: epoch
+save_total_limit: 2                # best (load_best_model_at_end) + latest (resume after a crash)
+load_best_model_at_end: true
+metric_for_best_model: macro_f1
+bf16: true
+logging_steps: 100
+report_to: none
+seed: 42

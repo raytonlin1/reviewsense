@@ -1,0 +1,26 @@
+# DistilBERT, 2 epochs, 256 tokens. ~16 min on Apple MPS, a few minutes on a GPU.
+# Measured (20k reviews, 2k test): accuracy 0.610, off-by-one 0.966, star MAE 0.48, macro-F1 0.608
+#   vs TF-IDF baseline: +3.7 points, 95% CI [+1.3, +6.0], McNemar p = 0.003
+model_name_or_path: distilbert-base-uncased
+n_train: 20000
+n_test: 2000
+max_length: 256
+export_dir: artifacts/distilbert-20k            # release artifact: gated, registered, deployed
+# ---- transformers.TrainingArguments
+output_dir: artifacts/checkpoints/distilbert-20k   # resumable checkpoints (full optimizer state); safe to delete
+learning_rate: 2.0e-5              # BERT range 2e-5..5e-5; larger overwrites pretrained knowledge
+num_train_epochs: 2
+per_device_train_batch_size: 16
+per_device_eval_batch_size: 32
+warmup_steps: 0.06                 # float < 1 = fraction of total steps
+weight_decay: 0.01
+lr_scheduler_type: linear
+eval_strategy: epoch
+save_strategy: epoch
+save_total_limit: 2                # best (load_best_model_at_end) + latest (resume after a crash)
+load_best_model_at_end: true
+metric_for_best_model: macro_f1    # chosen on the VALIDATION split
+bf16: true                         # switched off automatically without a CUDA GPU
+logging_steps: 50
+report_to: none                    # mlflow / wandb / tensorboard to track experiments
+seed: 42
