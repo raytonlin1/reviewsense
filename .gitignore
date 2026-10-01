@@ -1,0 +1,8 @@
+.venv*/
+.hfcache/
+artifacts/
+__pycache__/
+.pytest_cache/
+*.db
+data/feedback.jsonl
+.env
