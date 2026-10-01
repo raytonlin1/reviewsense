@@ -20,7 +20,6 @@ save_strategy: epoch
 save_total_limit: 2                # best (load_best_model_at_end) + latest (resume after a crash)
 load_best_model_at_end: true
 metric_for_best_model: macro_f1    # chosen on the VALIDATION split
-bf16: true                         # switched off automatically without a CUDA GPU
 logging_steps: 50
 report_to: none                    # mlflow / wandb / tensorboard to track experiments
 seed: 42

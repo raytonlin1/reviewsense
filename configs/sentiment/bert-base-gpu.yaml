@@ -16,7 +16,7 @@ save_strategy: epoch
 save_total_limit: 2                # best (load_best_model_at_end) + latest (resume after a crash)
 load_best_model_at_end: true
 metric_for_best_model: macro_f1
-bf16: true
+bf16: true                         # 16-bit training: fast on NVIDIA GPUs only (remove on Mac / CPU)
 logging_steps: 100
 report_to: none
 seed: 42

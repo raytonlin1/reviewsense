@@ -16,9 +16,7 @@ from __future__ import annotations
 
 import json
 import logging
-import sys
 from dataclasses import dataclass
-from pathlib import Path
 
 import numpy as np
 from scipy.special import softmax
@@ -28,8 +26,10 @@ from ..data import load_hf_yelp
 from ..runinfo import write_run_record
 
 log = logging.getLogger(__name__)
-LABELS = {i: f"{i + 1} star{'s' if i else ''}" for i in range(5)}      # same label names as the nlptown model
-DATASET = "Yelp/yelp_review_full"
+# The model predicts a class number 0-4. These names are saved with the model so its predictions read "4 stars",
+# not "LABEL_3" (they also match the public nlptown model the app uses until you train your own).
+ID2LABEL = {0: "1 star", 1: "2 stars", 2: "3 stars", 3: "4 stars", 4: "5 stars"}
+LABEL2ID = {name: number for number, name in ID2LABEL.items()}
 
 
 @dataclass
@@ -58,6 +58,12 @@ def star_metrics(labels: np.ndarray, probs: np.ndarray) -> dict:
             "macro_f1": float(f1_score(labels, preds, average="macro"))}
 
 
+def compute_metrics(eval_pred) -> dict:
+    """The Trainer calls this after every evaluation: raw model scores (logits) -> probabilities -> our metrics."""
+    logits, labels = eval_pred
+    return star_metrics(labels, softmax(logits, axis=-1))
+
+
 def splits(task: TaskArgs):
     train = load_hf_yelp("train", task.n_train).train_test_split(test_size=task.val_fraction, seed=task.split_seed)
     return train["train"], train["test"], load_hf_yelp("test", task.n_test)
@@ -79,37 +85,56 @@ def run_baseline(task: TaskArgs, args) -> dict:
 
 
 def run_transformer(task: TaskArgs, args) -> dict:
+    """Fine-tune a pretrained transformer (e.g. BERT) to predict 1-5 stars. `args` holds the training settings
+    (learning rate, epochs, batch size...) read from the YAML config."""
     from transformers import AutoModelForSequenceClassification, AutoTokenizer, DataCollatorWithPadding, Trainer
 
-    tok = AutoTokenizer.from_pretrained(task.model_name_or_path)
-    enc = lambda b: tok(b["text"], truncation=True, max_length=task.max_length)
-    train, val, test = (d.map(enc, batched=True, remove_columns=["text"]) for d in splits(task))
+    # 1. Data: train (learn), validation (pick the best checkpoint) and test (final score, used once).
+    train, validation, test = splits(task)
+
+    # 2. Tokenize: turn each review into the token IDs the model reads, cut to max_length tokens.
+    tokenizer = AutoTokenizer.from_pretrained(task.model_name_or_path)
+
+    def tokenize(batch):
+        return tokenizer(batch["text"], truncation=True, max_length=task.max_length)
+
+    train = train.map(tokenize, batched=True)
+    validation = validation.map(tokenize, batched=True)
+    test = test.map(tokenize, batched=True)
+
+    # 3. Model: the pretrained transformer plus a new, untrained layer that outputs 5 scores (one per star).
     model = AutoModelForSequenceClassification.from_pretrained(
-        task.model_name_or_path, num_labels=5, id2label=LABELS, label2id={v: k for k, v in LABELS.items()})
-    trainer = Trainer(model=model, args=args, train_dataset=train, eval_dataset=val, processing_class=tok,
-                      data_collator=DataCollatorWithPadding(tok),
-                      compute_metrics=lambda p: star_metrics(p.label_ids, softmax(p.predictions, axis=-1)))
+        task.model_name_or_path, num_labels=5, id2label=ID2LABEL, label2id=LABEL2ID)
+
+    # 4. Trainer: the library runs the whole training loop; we only plug in the pieces.
+    trainer = Trainer(
+        model=model,
+        args=args,                                         # all training settings, from the YAML config
+        train_dataset=train,
+        eval_dataset=validation,                           # evaluated each epoch; the best epoch is kept
+        processing_class=tokenizer,                        # saved next to the model so it can be reloaded
+        data_collator=DataCollatorWithPadding(tokenizer),  # pads each batch only to its longest review
+        compute_metrics=compute_metrics,
+    )
+
+    # 5. Train (resume=true continues a crashed run from its last checkpoint), then save the best model.
     trainer.train(resume_from_checkpoint=task.resume)
-    trainer.save_model(task.export_dir)                                     # best checkpoint (validation) -> export
-    trainer.args.output_dir = task.export_dir                               # model card is written to output_dir
-    trainer.create_model_card(model_name=Path(task.export_dir).name, finetuned_from=task.model_name_or_path,
-                              tasks="text-classification", dataset=DATASET)
-    pred = trainer.predict(test, metric_key_prefix="test")                  # the one and only look at the test set
-    labels, probs = pred.label_ids, softmax(pred.predictions, axis=-1)
+    trainer.save_model(task.export_dir)
+
+    # 6. Score the test set exactly once, and record how this model was made.
+    output = trainer.predict(test)
+    labels, probs = output.label_ids, softmax(output.predictions, axis=-1)
     metrics = star_metrics(labels, probs)
     write_run_record(task.export_dir, {"task": task, "training_args": args}, metrics, labels, probs.argmax(-1))
     return metrics
 
 
 def main(argv: list[str] | None = None) -> dict:
-    import torch
     from transformers import TrainingArguments
     from trl import TrlParser
 
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
-    argv = list(sys.argv[1:] if argv is None else argv)
-    if not torch.cuda.is_available():
-        argv += ["--bf16", "false"]          # bf16 only pays off on recent NVIDIA GPUs; parsed so it applies at construction
+    # Read the YAML config (plus any --overrides) into our TaskArgs and Hugging Face's TrainingArguments.
     task, args = TrlParser((TaskArgs, TrainingArguments)).parse_args_and_config(argv)
     metrics = run_baseline(task, args) if task.baseline else run_transformer(task, args)
     log.info("test metrics %s -> %s", json.dumps({k: round(v, 4) for k, v in metrics.items()}), task.export_dir)

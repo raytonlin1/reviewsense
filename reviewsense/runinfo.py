@@ -12,7 +12,7 @@ from pathlib import Path
 
 import numpy as np
 
-PACKAGES = ("torch", "transformers", "trl", "peft", "datasets", "scikit-learn")
+PACKAGES = ("torch", "transformers", "trl", "datasets", "scikit-learn")
 
 
 def _git_commit() -> str | None:
