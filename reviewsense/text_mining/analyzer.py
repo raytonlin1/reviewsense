@@ -12,13 +12,13 @@ from __future__ import annotations
 from collections import Counter
 
 import pandas as pd
-import spacy
 import yaml
 from spacy.matcher import PhraseMatcher
 from transformers import pipeline
 
 from ..config import get_settings
 from ..data import Review, split_sentences
+from ..linguistics.core import nlp
 
 POLARITY = {"positive": 1.0, "neutral": 0.0, "negative": -1.0}
 
@@ -42,7 +42,7 @@ class ReviewAnalyzer:
         # Aspect-based sentiment: (sentence, aspect word) -> positive / neutral / negative FOR THAT ASPECT.
         self.aspect_model = pipeline("text-classification", model=settings.absa_model)
         # spaCy finds aspect words (by lemma, so "waiters" matches "waiter") and adjectives.
-        self.nlp = spacy.load(settings.spacy_model)
+        self.nlp = nlp()                    # the shared pipeline from Part 5 (loaded once for the whole project)
         self.aspects = yaml.safe_load((settings.data_dir / "aspects.yaml").read_text())
         self.matcher = PhraseMatcher(self.nlp.vocab, attr="LEMMA")
         for aspect, words in self.aspects.items():

@@ -1,0 +1,12 @@
+{"id": "r1", "entities": [["Golden Dragon Noodle House", "ORG"], ["noodles", "DISH"], ["broth", "DISH"], ["Li Wei", "PERSON"], ["beef soup", "DISH"]]}
+{"id": "r2", "entities": []}
+{"id": "r3", "entities": [["dumplings", "DISH"], ["about $12", "MONEY"]]}
+{"id": "r4", "entities": [["Bella Napoli", "ORG"], ["pizza", "DISH"], ["Seattle", "GPE"], ["Maria", "PERSON"]]}
+{"id": "r5", "entities": [["pizza", "DISH"]]}
+{"id": "r6", "entities": [["pizza", "DISH"]]}
+{"id": "r7", "entities": [["Sunrise Cafe", "ORG"], ["pancakes", "DISH"]]}
+{"id": "r8", "entities": [["47.6097, -122.3331", "GPS"]]}
+{"id": "r9", "entities": []}
+{"id": "r10", "entities": [["Taqueria El Sol", "ORG"], ["al pastor tacos", "DISH"], ["salsa verde", "DISH"]]}
+{"id": "r11", "entities": [["Tacos", "DISH"]]}
+{"id": "r12", "entities": [["carnitas", "DISH"]]}

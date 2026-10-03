@@ -1,0 +1,11 @@
+{"label": "DISH", "pattern": [{"LOWER": "noodles"}]}
+{"label": "DISH", "pattern": [{"LOWER": "dumplings"}]}
+{"label": "DISH", "pattern": [{"LOWER": "pizza"}]}
+{"label": "DISH", "pattern": [{"LOWER": "tacos"}]}
+{"label": "DISH", "pattern": [{"LOWER": "al"}, {"LOWER": "pastor"}, {"LOWER": "tacos"}]}
+{"label": "DISH", "pattern": [{"LOWER": "carnitas"}]}
+{"label": "DISH", "pattern": [{"LOWER": "pancakes"}]}
+{"label": "DISH", "pattern": [{"LOWER": "salsa"}, {"LOWER": "verde"}]}
+{"label": "DISH", "pattern": [{"LOWER": "beef"}, {"LOWER": "soup"}]}
+{"label": "DISH", "pattern": [{"LOWER": "broth"}]}
+{"label": "GPS", "pattern": [{"TEXT": {"REGEX": "^[-+]?\\d{1,2}\\.\\d+$"}}, {"ORTH": ","}, {"TEXT": {"REGEX": "^[-+]?\\d{1,3}\\.\\d+$"}}]}
