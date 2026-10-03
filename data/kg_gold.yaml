@@ -1,0 +1,16 @@
+# The facts a person expects from data/sample_reviews.jsonl (used to measure extraction quality).
+# Descriptions ("slow service") are not listed: they are open-ended, so they are checked by hand instead.
+Golden Dragon Noodle House:
+  serves: [noodles, broth, beef soup, dumplings]
+  has_staff: [Li Wei]
+  has_price: [about $12]
+Bella Napoli Pizzeria:
+  serves: [pizza]
+  has_staff: [Maria]
+  located_in: [Seattle]
+  near: [Pike Street]
+Sunrise Cafe:
+  serves: [pancakes]
+  located_at: ["47.6097, -122.3331"]
+Taqueria El Sol:
+  serves: [al pastor tacos, salsa verde, tacos, carnitas]

@@ -20,3 +20,6 @@ pandas>=3.0,<4                        # per-business report
 pyyaml>=6.0,<7                        # data/aspects.yaml
 sentencepiece>=0.2,<0.3               # the DeBERTa-v3 aspect model ships only a SentencePiece tokenizer
 protobuf>=7.36,<8                     # ...and transformers needs protobuf to convert that tokenizer
+# ---- Part 6: knowledge graph
+networkx>=3.7,<4                      # the graph
+rapidfuzz>=3.14,<4                    # fuzzy name matching ("bella napolli" -> "Bella Napoli Pizzeria")

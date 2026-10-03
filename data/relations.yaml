@@ -1,0 +1,9 @@
+# Knowledge-graph schema: an entity of this type, mentioned in a review of business X, becomes the fact
+# (X, relation, entity). Business configuration: add a line here to extract a new kind of fact.
+DISH: serves
+PERSON: has_staff
+GPE: located_in
+FAC: near
+LOC: near
+GPS: located_at
+MONEY: has_price
