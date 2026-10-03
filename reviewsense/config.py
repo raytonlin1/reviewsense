@@ -27,9 +27,16 @@ class Settings(BaseSettings):
     # ---- linguistics
     spacy_model: str = "en_core_web_sm"
 
+    # ---- review analytics (Part 3)
+    #star model: a public one until you point this at your Part 2 model, e.g. REVIEWSENSE_SENTIMENT_MODEL=artifacts/distilbert-20k
+    sentiment_model: str = "nlptown/bert-base-multilingual-uncased-sentiment"
+    emotion_model: str = "SamLowe/roberta-base-go_emotions"           # 28 emotions (GoEmotions), multi-label
+    absa_model: str = "yangheng/deberta-v3-base-absa-v1.1"            # aspect-based sentiment
+
 
 @lru_cache
 def get_settings() -> Settings:
     s = Settings()
     s.artifacts_dir.mkdir(parents=True, exist_ok=True)
     return s
+

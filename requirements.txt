@@ -15,3 +15,8 @@ statsmodels>=0.15,<0.16               # McNemar test
 pydantic>=2.13,<3                     # imported directly (settings validation errors)
 pydantic-settings>=2.15,<3            # settings from environment variables
 pytest>=9.1,<10
+# ---- Part 3: review analytics
+pandas>=3.0,<4                        # per-business report
+pyyaml>=6.0,<7                        # data/aspects.yaml
+sentencepiece>=0.2,<0.3               # the DeBERTa-v3 aspect model ships only a SentencePiece tokenizer
+protobuf>=7.36,<8                     # ...and transformers needs protobuf to convert that tokenizer

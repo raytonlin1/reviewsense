@@ -1,0 +1,9 @@
+# Business configuration: the aspects the dashboard tracks, and the words that signal each one.
+# Matched on lemmas (dictionary forms), so "waiters" matches "waiter". Each word belongs to ONE aspect
+# (tests/test_analyzer.py checks this). Edit this file, not the code, to track a new aspect.
+food: [food, dish, taste, flavor, meal, noodle, pizza, taco, coffee, broth, dumpling, crust, salsa, pancake, carnitas]
+service: [service, waiter, waitress, staff, server, manager, cashier, barista, host]
+wait_time: [wait, line, minute, slow, fast, quick, delay]
+price: [price, cost, value, bill, overpriced, expensive, cheap, portion]
+ambiance: [atmosphere, music, decor, patio, noise, vibe, dining room]
+cleanliness: [clean, dirty, unclean, hygiene, kitchen, table, sticky, bathroom]
