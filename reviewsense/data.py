@@ -62,8 +62,8 @@ def clean(text: str) -> str:
     straight ones (uncurl_quotes=True), so "“wow”" and "\"wow\"" match the same search terms."""
     if "<" in text:
         text = BeautifulSoup(text, "html.parser").get_text(" ")
+    text = text.replace("\\n", " ")       # line breaks stored as the two characters \ and n (48% of Yelp reviews)
     return " ".join(ftfy.fix_text(text).split())
-
 
 @lru_cache
 def _sentencizer():

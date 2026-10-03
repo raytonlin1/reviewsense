@@ -22,6 +22,9 @@ def test_clean_html_entities_and_mojibake():
 def test_clean_leaves_plain_text_alone():
     assert clean("5 < 6 and the pho was good") == "5 < 6 and the pho was good"
 
+def test_clean_removes_literal_backslash_n():
+    # 48% of HF Yelp reviews store line breaks as the two characters "\" and "n"
+    assert clean("so good.\\n\\ni'm back") == "so good. i'm back"
 
 def test_sentences_hard_cases():
     assert split_sentences("Dr. Li paid $4.50. It was great! Yes.") == ["Dr. Li paid $4.50.", "It was great!", "Yes."]
