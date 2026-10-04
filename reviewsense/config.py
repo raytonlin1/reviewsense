@@ -39,6 +39,12 @@ class Settings(BaseSettings):
     retrieve_k: int = 20                      # candidates each retriever returns
     answer_k: int = 5                         # results returned after reranking
 
+    # ---- question answering, translation (Part 8)
+    reader_model: str = "deepset/roberta-base-squad2-distilled"   # finds answer spans; trained to say "no answer"
+    qa_passages: int = 3                      # top search results the reader looks at
+    answer_threshold: float = 0.7             # below this confidence, say "the reviews don't say"
+    translation_model: str = "Helsinki-NLP/opus-mt-mul-en"         # fallback: any of ~100 languages -> English
+
 
 @lru_cache
 def get_settings() -> Settings:

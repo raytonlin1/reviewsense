@@ -1,0 +1,15 @@
+# Reference summaries written by a person: what a manager should learn from each business's reviews.
+# ROUGE compares a generated summary to these (word overlap). Good for catching regressions, not proof of quality.
+Golden Dragon Noodle House: >-
+  Customers love the hand-pulled noodles, rich broth, dumplings and the spicy beef soup, and prices are fair at about
+  $12 a bowl. The main complaint is slow service: a 45 minute wait for a table and forgotten drinks. It gets crowded
+  after 7 pm.
+Bella Napoli Pizzeria: >-
+  The wood-fired pizza with crispy crust and fresh mozzarella is praised, and the server Maria is attentive. Some found
+  it overpriced, one reviewer got cold, soggy pizza and a rude manager, and parking near Pike Street is hard.
+Sunrise Cafe: >-
+  Known for fluffy pancakes, strong coffee and a cozy atmosphere with fast wifi that is good for working. Some found
+  the coffee bitter, the line slow and the music too loud. Staff are friendly and prices are reasonable.
+Taqueria El Sol: >-
+  The al pastor tacos and fresh, spicy salsa verde are good, service is quick and staff are friendly. But the dining
+  room was dirty with sticky tables, the kitchen looked unclean, and one customer got sick after eating the carnitas.

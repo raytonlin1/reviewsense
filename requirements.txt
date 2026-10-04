@@ -29,3 +29,9 @@ sentence-transformers-haystack>=0.1.2,<0.2   # embedding models + cross-encoder 
 nltk>=3.9,<4                          # sentence splitting inside Haystack's DocumentSplitter
 symspellpy>=6.10,<7                   # query spelling correction
 ranx>=0.3.21,<0.4                     # search-quality metrics + significance tests
+# ---- Part 8: summarization, question answering, translation
+sumy>=0.13,<0.14                      # extractive summaries (LexRank)
+transformers-haystack>=1.0,<2         # Haystack's extractive question-answering reader
+lingua-language-detector>=2.2,<3      # language identification (offline, no model download)
+rouge-score>=0.1.2,<0.2               # summary quality (ROUGE)
+sacrebleu>=2.6,<3                     # translation quality (chrF, BLEU)

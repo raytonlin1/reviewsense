@@ -1,0 +1,16 @@
+# Questions with every acceptable answer (any one counts as correct). An empty list means the reviews don't
+# answer it, and the right behaviour is to say so instead of guessing.
+How long did people wait for a table at Golden Dragon?: ["45 minutes"]
+How much is a bowl at Golden Dragon?: ["$12", "about $12", "$12 per bowl", "about $12 per bowl"]
+What is the chef's name at Golden Dragon?: ["Li Wei", "Chef Li Wei"]
+What is the name of the server at Bella Napoli?: ["Maria", "Our server Maria"]
+What kind of pizza does Bella Napoli serve?: ["wood-fired pizza", "wood-fired", "the best wood-fired pizza", "best wood-fired pizza"]
+Where is parking hard to find?: ["near Pike Street", "Pike Street"]
+What did the customer eat before getting sick?: ["the carnitas", "carnitas"]
+When does Golden Dragon get crowded?: ["after 7 pm", "7 pm"]
+What salsa does Taqueria El Sol have?: ["salsa verde", "The salsa verde", "verde"]
+How was the wifi at Sunrise Cafe?: ["fast", "fast wifi"]
+Does Sunrise Cafe have vegan options?: []
+What time does Bella Napoli close?: []
+Is there live music at Taqueria El Sol?: []
+Do they take reservations at Golden Dragon?: []

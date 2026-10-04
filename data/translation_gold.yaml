@@ -1,0 +1,29 @@
+# Review sentences in other languages, with a reference English translation written by a person.
+# Used to measure language identification (is `language` detected?) and translation quality (chrF, BLEU).
+- language: spanish
+  text: El café es excelente y el personal es muy amable.
+  english: The coffee is excellent and the staff are very friendly.
+- language: spanish
+  text: Esperamos una hora y la comida llegó fría.
+  english: We waited an hour and the food arrived cold.
+- language: french
+  text: Les pizzas sont délicieuses mais le service est très lent.
+  english: The pizzas are delicious but the service is very slow.
+- language: french
+  text: La salle était sale et le serveur était impoli.
+  english: The dining room was dirty and the waiter was rude.
+- language: german
+  text: Die Nudeln waren frisch und die Preise sind fair.
+  english: The noodles were fresh and the prices are fair.
+- language: german
+  text: Zu laut, zu teuer, und das Essen war kalt.
+  english: Too loud, too expensive, and the food was cold.
+- language: italian
+  text: La pizza era ottima e il cameriere molto gentile.
+  english: The pizza was excellent and the waiter very kind.
+- language: portuguese
+  text: O atendimento foi rápido e os tacos estavam deliciosos.
+  english: The service was fast and the tacos were delicious.
+- language: english
+  text: Great tacos, terrible parking.
+  english: Great tacos, terrible parking.
