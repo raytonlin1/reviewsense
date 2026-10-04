@@ -5,7 +5,7 @@ Sources: Yelp Open Dataset JSON (has business names) > HF `Yelp/yelp_review_full
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
 
@@ -21,7 +21,6 @@ class Review:
     business: str
     text: str
     stars: int | None = None
-    meta: dict = field(default_factory=dict)
 
 
 def load_sample() -> list[Review]:
@@ -65,14 +64,13 @@ def clean(text: str) -> str:
     text = text.replace("\\n", " ")       # line breaks stored as the two characters \ and n (48% of Yelp reviews)
     return " ".join(ftfy.fix_text(text).split())
 
+
 @lru_cache
 def _sentencizer():
     """spaCy's trained sentence segmenter ("senter") without the parser/NER: measured on 12 hard cases
     (abbreviations, decimals, quotes, "!!!", lowercase starts, lists, URLs) it got 10/12 vs regex 9/12 and pySBD 8/12,
     at ~6 ms per review (full parser: 11/12 at ~10 ms). Known misses: "food.Terrible" (no space), emoji as a full stop."""
     import spacy
-
-    from .config import get_settings
 
     nlp = spacy.load(get_settings().spacy_model, exclude=["parser", "ner", "lemmatizer", "attribute_ruler", "tagger"])
     nlp.enable_pipe("senter")

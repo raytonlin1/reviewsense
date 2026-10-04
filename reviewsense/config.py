@@ -28,7 +28,7 @@ class Settings(BaseSettings):
     spacy_model: str = "en_core_web_sm"
 
     # ---- review analytics (Part 3)
-    #star model: a public one until you point this at your Part 2 model, e.g. REVIEWSENSE_SENTIMENT_MODEL=artifacts/distilbert-20k
+    # star model: a public one until you point it at your Part 2 model in .env, e.g. REVIEWSENSE_SENTIMENT_MODEL=/full/path/artifacts/distilbert-20k
     sentiment_model: str = "nlptown/bert-base-multilingual-uncased-sentiment"
     emotion_model: str = "SamLowe/roberta-base-go_emotions"           # 28 emotions (GoEmotions), multi-label
     absa_model: str = "yangheng/deberta-v3-base-absa-v1.1"            # aspect-based sentiment
@@ -36,7 +36,6 @@ class Settings(BaseSettings):
     # ---- search (Part 7)
     embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"   # text -> 384-number meaning vector
     reranker_model: str = "cross-encoder/ms-marco-MiniLM-L-6-v2"      # scores (query, passage) pairs
-    vector_index: str = "HNSW32"              # FAISS index type: "Flat" (exact), "HNSW32" (fast graph), "IVF64,PQ16" (compressed)
     retrieve_k: int = 20                      # candidates each retriever returns
     answer_k: int = 5                         # results returned after reranking
 

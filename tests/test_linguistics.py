@@ -5,20 +5,21 @@ import spacy
 
 from reviewsense.config import get_settings
 from reviewsense.data import load_sample
-from reviewsense.linguistics.core import analyze_syntax, nlp
+from reviewsense.linguistics.core import nlp
 from reviewsense.linguistics.evaluate_ner import score_entities
 
 
 def test_parts_of_speech_dependencies_and_lemmas():
-    tokens = {t["text"]: t for t in analyze_syntax("The waiters were painfully slow.")["tokens"]}
-    assert tokens["slow"]["pos"] == "ADJ" and tokens["waiters"]["pos"] == "NOUN"
-    assert tokens["waiters"]["dep"] == "nsubj" and tokens["waiters"]["head"] == "were"     # who was slow? the waiters
-    assert tokens["waiters"]["lemma"] == "waiter"
+    doc = nlp()("The waiters were painfully slow.")
+    waiters, slow = doc[1], doc[4]
+    assert slow.pos_ == "ADJ" and waiters.pos_ == "NOUN"
+    assert waiters.dep_ == "nsubj" and waiters.head.text == "were"          # who was slow? the waiters
+    assert waiters.lemma_ == "waiter"
 
 
 def test_rules_label_dishes_gps_and_our_businesses():
     text = "Taqueria El Sol makes al pastor tacos. Located at 47.6097, -122.3331, about $12 a plate."
-    entities = {(e["text"], e["label"]) for e in analyze_syntax(text)["entities"]}
+    entities = {(e.text, e.label_) for e in nlp()(text).ents}
     assert {("Taqueria El Sol", "ORG"), ("al pastor tacos", "DISH"), ("47.6097, -122.3331", "GPS")} <= entities
     assert any(label == "MONEY" for _, label in entities)                                  # still the statistical NER
 

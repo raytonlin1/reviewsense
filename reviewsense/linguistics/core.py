@@ -28,14 +28,3 @@ def nlp():
     ruler.add_patterns([{"label": "ORG", "pattern": name} for name in businesses])
     return pipeline
 
-
-def analyze_syntax(text: str) -> dict:
-    """Everything spaCy knows about a text, as plain data (for APIs, debugging and teaching)."""
-    doc = nlp()(text)
-    return {
-        "tokens": [{"text": t.text, "lemma": t.lemma_, "pos": t.pos_, "tag": t.tag_, "dep": t.dep_, "head": t.head.text}
-                   for t in doc],
-        "entities": [{"text": e.text, "label": e.label_, "start": e.start_char, "end": e.end_char} for e in doc.ents],
-        "noun_chunks": [chunk.text for chunk in doc.noun_chunks],
-        "sentences": [sentence.text for sentence in doc.sents],
-    }

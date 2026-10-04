@@ -13,6 +13,11 @@ def engine():
     return SearchEngine(load_sample())
 
 
+def test_reviews_are_split_into_passages_that_keep_their_metadata(engine):
+    passage = engine.search("noodles", k=1)["results"][0]
+    assert passage["text"].count(".") <= 2 and passage["business"] and passage["review_id"] and passage["stars"]
+
+
 def test_meaning_search_finds_answers_without_shared_words(engine):
     top = engine.search("food poisoning", k=1)["results"][0]
     assert top["review_id"] == "r12"                       # "I got sick after eating the carnitas"

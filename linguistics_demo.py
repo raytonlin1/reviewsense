@@ -9,7 +9,7 @@ import spacy
 from spacy import displacy
 
 from reviewsense.config import get_settings
-from reviewsense.linguistics.core import analyze_syntax, nlp
+from reviewsense.linguistics.core import nlp
 from reviewsense.linguistics.evaluate_ner import score_entities
 
 sentence = sys.argv[1] if len(sys.argv) > 1 else "The waiters at Bella Napoli Pizzeria were painfully slow."
@@ -17,8 +17,8 @@ sentence = sys.argv[1] if len(sys.argv) > 1 else "The waiters at Bella Napoli Pi
 # 1. Every word: its lemma, part of speech, and how it attaches to another word (dependency + head).
 print(f"Sentence: {sentence}\n")
 print(f"{'word':12}{'lemma':12}{'pos':7}{'dep':10}head")
-for token in analyze_syntax(sentence)["tokens"]:
-    print(f"{token['text']:12}{token['lemma']:12}{token['pos']:7}{token['dep']:10}{token['head']}")
+for token in nlp()(sentence):
+    print(f"{token.text:12}{token.lemma_:12}{token.pos_:7}{token.dep_:10}{token.head.text}")
 
 # 2. Entities: the standard model vs. our pipeline (standard model + rules + business catalog).
 standard = spacy.load(get_settings().spacy_model)

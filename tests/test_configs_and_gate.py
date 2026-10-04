@@ -50,9 +50,11 @@ def test_gate_cli_exit_codes(tmp_path):
         (tmp_path / name).mkdir()
         preds = [0] * correct + [1] * (400 - correct)
         (tmp_path / name / "eval.json").write_text(json.dumps({"preds": preds, "gold": g}))
-    run = lambda c: subprocess.run([sys.executable, "-m", "experiments.significance", str(tmp_path / "base"), str(tmp_path / c), "--gate"],
-                                   capture_output=True, text=True).returncode
-    assert run("same") == 1 and run("better") == 0 and run("other_test_set") == 1   # same size, different labels
+    def gate(candidate):
+        command = [sys.executable, "-m", "experiments.significance", str(tmp_path / "base"), str(tmp_path / candidate), "--gate"]
+        return subprocess.run(command, capture_output=True, text=True).returncode
+
+    assert gate("same") == 1 and gate("better") == 0 and gate("other_test_set") == 1   # same size, different labels
 
 
 def test_our_config_fields_never_shadow_library_fields():

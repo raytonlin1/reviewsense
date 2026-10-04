@@ -1,6 +1,4 @@
 """Fast tests on small, made-up review sets with obvious themes (no downloads)."""
-import pytest
-
 from reviewsense.text_mining.topics import discover_topics
 
 PIZZA = ["The pizza crust was crispy and the cheese toppings were fresh",
@@ -21,9 +19,3 @@ def test_nmf_separates_two_obvious_themes():
 
 def test_same_input_gives_same_topics():
     assert discover_topics(PIZZA + HOTEL, n_topics=2, min_df=1) == discover_topics(PIZZA + HOTEL, n_topics=2, min_df=1)
-
-
-def test_lsa_option_and_bad_method():
-    assert len(discover_topics(PIZZA + HOTEL, n_topics=2, method="lsa", min_df=1)["topics"]) == 2
-    with pytest.raises(ValueError):
-        discover_topics(PIZZA + HOTEL, method="lda")

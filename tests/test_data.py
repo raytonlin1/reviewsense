@@ -7,12 +7,6 @@ def test_sample_loads():
     assert all(isinstance(r, Review) and r.text and r.stars in {1, 2, 3, 4, 5} for r in reviews)
 
 
-def test_meta_default_not_shared():
-    a, b = Review("1", "x", "t"), Review("2", "y", "u")
-    a.meta["k"] = 1
-    assert b.meta == {}
-
-
 def test_clean_html_entities_and_mojibake():
     assert clean("<p>Caf\u00c3\u00a9 was <b>great</b> &amp; cheap</p>\n\n  ok") == "Café was great & cheap ok"
     assert clean("great<br/>food") == "great food"                        # tags become spaces, words don't merge
@@ -22,9 +16,11 @@ def test_clean_html_entities_and_mojibake():
 def test_clean_leaves_plain_text_alone():
     assert clean("5 < 6 and the pho was good") == "5 < 6 and the pho was good"
 
+
 def test_clean_removes_literal_backslash_n():
     # 48% of HF Yelp reviews store line breaks as the two characters "\" and "n"
     assert clean("so good.\\n\\ni'm back") == "so good. i'm back"
+
 
 def test_sentences_hard_cases():
     assert split_sentences("Dr. Li paid $4.50. It was great! Yes.") == ["Dr. Li paid $4.50.", "It was great!", "Yes."]
