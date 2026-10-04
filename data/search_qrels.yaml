@@ -1,0 +1,12 @@
+# Hand-labelled relevance ("qrels"): search query -> the review ids that answer it.
+# 10 queries is enough to see differences, not to prove them; grow this to 50+ for real decisions.
+slow service: [r2, r8]
+waited forever for a table: [r2]
+dirty dining room: [r11, r12]
+fresh wood fired pizza: [r4]
+rude manager: [r5]
+good coffee to work from: [r7]
+cheap prices: [r3, r6]
+food poisoning: [r12]
+friendly staff: [r3, r4, r11]
+spicy soup: [r1]

@@ -22,4 +22,9 @@ sentencepiece>=0.2,<0.3               # the DeBERTa-v3 aspect model ships only a
 protobuf>=7.36,<8                     # ...and transformers needs protobuf to convert that tokenizer
 # ---- Part 6: knowledge graph
 networkx>=3.7,<4                      # the graph
-rapidfuzz>=3.14,<4                    # fuzzy name matching ("bella napolli" -> "Bella Napoli Pizzeria")
+rapidfuzz>=3.14,<4                    # fuzzy name matching ("bella napolli" -> "Bella Napoli Pizzeria")# ---- Part 7: search
+haystack-ai>=3.2,<4                   # search pipeline framework
+sentence-transformers-haystack>=0.1.2,<0.2   # embedding models + cross-encoder reranker for Haystack
+faiss-haystack>=2.1,<3                # FAISS vector index for Haystack (installs faiss-cpu)
+symspellpy>=6.10,<7                   # query spelling correction
+ranx>=0.3.21,<0.4                     # search-quality metrics + significance tests
