@@ -64,17 +64,24 @@ def citations(answer: str, documents: list) -> list:
     return cited
 
 
+def load_llm() -> TransformersChatGenerator:
+    """The local LLM, loaded once and shared (it takes a few GB of memory). do_sample=False: the same question always
+    gets the same answer (testable, reproducible)."""
+    settings = get_settings()
+    llm = TransformersChatGenerator(model=settings.llm_model, generation_kwargs={
+        "max_new_tokens": settings.max_answer_tokens, "do_sample": False})
+    llm.warm_up()                                       # load the model now, not on the first question
+    return llm
+
+
 class ReviewAssistant:
-    def __init__(self, engine: SearchEngine):
+    def __init__(self, engine: SearchEngine, llm: TransformersChatGenerator | None = None):
         settings = get_settings()
         self.engine = engine
         self.passages = settings.rag_passages
         self.answer_prompt = ChatPromptBuilder(template=ANSWER_PROMPT)
         self.summary_prompt = ChatPromptBuilder(template=SUMMARY_PROMPT)
-        # do_sample=False: the same question always gets the same answer (testable, reproducible)
-        self.llm = TransformersChatGenerator(model=settings.llm_model, generation_kwargs={
-            "max_new_tokens": settings.max_answer_tokens, "do_sample": False})
-        self.llm.warm_up()                                  # load the model now, not on the first question
+        self.llm = llm or load_llm()
 
     def generate(self, messages: list[ChatMessage]) -> str:
         return self.llm.run(messages=messages)["replies"][0].text.strip()

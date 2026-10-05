@@ -50,6 +50,11 @@ class Settings(BaseSettings):
     rag_passages: int = 5                     # search results put into the prompt
     max_answer_tokens: int = 200
 
+    # ---- safety (Part 10)
+    nli_model: str = "cross-encoder/nli-deberta-v3-xsmall"     # does text A support text B? (fact check, topics)
+    injection_model: str = "protectai/deberta-v3-base-prompt-injection-v2"
+    fact_threshold: float = 0.5               # minimum support for an answer sentence to be shown
+
 
 @lru_cache
 def get_settings() -> Settings:

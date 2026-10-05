@@ -1,0 +1,66 @@
+# Sentences an LLM wrote (most are real Part 9 outputs) and the review passage they cite.
+# supported: does the passage really say this? Used to measure and tune the fact check.
+- supported: true
+  claim: Review [3] mentions that Bella Napoli is overpriced for the portion size.
+  business: Bella Napoli Pizzeria
+  source: Decent pizza, but it is overpriced for the portion size. The patio is nice in summer.
+- supported: false
+  claim: Review [4] states that the pizza is decent but the price is high.
+  business: Bella Napoli Pizzeria
+  source: Our server Maria was attentive and kind.
+- supported: false
+  claim: Review [4] also mentions that parking is hard to find at Bella Napoli Pizzeria.
+  business: Bella Napoli Pizzeria
+  source: Never again.
+- supported: true
+  claim: Review [1] says that parking near Pike Street is a nightmare.
+  business: Bella Napoli Pizzeria
+  source: Parking near Pike Street is a nightmare.
+- supported: false
+  claim: Review [2] mentions that it gets crowded after 7 pm and suggests coming early, which implies that they may take reservations.
+  business: Golden Dragon Noodle House
+  source: It gets crowded after 7 pm, so come early.
+- supported: true
+  claim: People waited 45 minutes for a table at Golden Dragon Noodle House on Saturday. [1]
+  business: Golden Dragon Noodle House
+  source: The food was delicious but the service was painfully slow. We waited 45 minutes for a table on Saturday.
+- supported: true
+  claim: Review [2] mentions that the dining room was dirty and the tables were sticky, indicating that the place is not clean.
+  business: Taqueria El Sol
+  source: Tacos were tasty but small. The dining room was dirty and the tables were sticky.
+- supported: false
+  claim: Review [5] says to avoid the place because the coffee is bad.
+  business: Taqueria El Sol
+  source: Avoid this place.
+- supported: true
+  claim: The customer ate carnitas at Taqueria El Sol and got sick after eating it. [1]
+  business: Taqueria El Sol
+  source: I got sick after eating the carnitas. The kitchen looked unclean and the cashier ignored us.
+- supported: false
+  claim: Review [2] says the wifi was slow.
+  business: Sunrise Cafe
+  source: The coffee was bitter and the line was slow. The music was too loud to have a conversation.
+- supported: true
+  claim: Sunrise Cafe has a cozy atmosphere and fast wifi, which makes it a good place to work. [2]
+  business: Sunrise Cafe
+  source: Cozy atmosphere and fast wifi, perfect for working.
+- supported: false
+  claim: Golden Dragon Noodle House is open until midnight. [1]
+  business: Golden Dragon Noodle House
+  source: Great dumplings and friendly staff. Prices are fair at about $12 per bowl.
+- supported: true
+  claim: The chef's name at Golden Dragon Noodle House is Li Wei. [2]
+  business: Golden Dragon Noodle House
+  source: Chef Li Wei greeted us personally and he recommended the spicy beef soup.
+- supported: false
+  claim: Maria, the server at Bella Napoli, was rude to customers. [4]
+  business: Bella Napoli Pizzeria
+  source: Our server Maria was attentive and kind.
+- supported: true
+  claim: The salsa verde at Taqueria El Sol is fresh and spicy. [1]
+  business: Taqueria El Sol
+  source: Taqueria El Sol makes authentic al pastor tacos. The salsa verde is fresh and spicy.
+- supported: false
+  claim: The pizza at Bella Napoli was cold and soggy according to most customers. [3]
+  business: Bella Napoli Pizzeria
+  source: Bella Napoli serves the best wood-fired pizza in Seattle. The crust is crispy and the mozzarella is fresh.
