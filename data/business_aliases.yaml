@@ -1,0 +1,5 @@
+# Short names people use for a business (part of the business catalog). Matched exactly, ignoring capitals.
+# Only unambiguous names: "Sunrise" alone is left out because it also appears in ordinary sentences.
+Golden Dragon Noodle House: [Golden Dragon]
+Bella Napoli Pizzeria: [Bella Napoli]
+Taqueria El Sol: [El Sol]

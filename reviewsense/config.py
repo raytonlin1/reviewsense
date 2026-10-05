@@ -45,6 +45,11 @@ class Settings(BaseSettings):
     answer_threshold: float = 0.7             # below this confidence, say "the reviews don't say"
     translation_model: str = "Helsinki-NLP/opus-mt-mul-en"         # fallback: any of ~100 languages -> English
 
+    # ---- LLM answers with retrieval (RAG, Part 9)
+    llm_model: str = "Qwen/Qwen3-1.7B"        # small open model, runs on a laptop CPU (Qwen3-0.6B: 57% correct, too weak)
+    rag_passages: int = 5                     # search results put into the prompt
+    max_answer_tokens: int = 200
+
 
 @lru_cache
 def get_settings() -> Settings:

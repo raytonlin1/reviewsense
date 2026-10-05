@@ -1,0 +1,9 @@
+# Opinion and yes/no questions: answered by reporting what reviewers say (an extractive reader can't answer these,
+# so they are separate from qa_gold.yaml). Any accepted word in the reply counts as correct.
+Is Taqueria El Sol clean?: ["dirty", "unclean", "not clean", "sticky"]
+Is the service at Golden Dragon fast?: ["slow", "45 minutes"]
+Is Bella Napoli expensive?: ["overpriced"]
+Is Sunrise Cafe a good place to work on a laptop?: ["wifi", "working"]
+Is the coffee good at Sunrise Cafe?: ["strong", "bitter"]
+Are the staff friendly at Taqueria El Sol?: ["friendly"]
+Is Golden Dragon good for kids?: []
