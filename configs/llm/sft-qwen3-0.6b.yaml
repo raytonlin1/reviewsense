@@ -1,0 +1,28 @@
+# SFT of Qwen3-0.6B on distilled, fact-checked answers (artifacts/llm-data/sft.jsonl), with LoRA, on a laptop CPU.
+# ---- model + LoRA (trl.ModelConfig)
+model_name_or_path: Qwen/Qwen3-0.6B
+use_peft: true
+lora_r: 16                         # size of the LoRA matrices: more = more capacity, more memory
+lora_alpha: 32                     # scale of the LoRA update (often 2 x r)
+lora_dropout: 0.05
+lora_target_modules: [all-linear]  # every linear layer (attention and MLP)
+# ---- data + release artifact (TaskArgs)
+data_file: artifacts/llm-data/sft.jsonl
+max_refusal_fraction: 0.25         # the data was 50% refusals; real questions are ~25% unanswerable
+export_dir: artifacts/qwen3-0.6b-sft
+# ---- training (trl.SFTConfig)
+output_dir: artifacts/checkpoints/qwen3-0.6b-sft
+learning_rate: 2.0e-4              # LoRA trains few weights, so higher than full fine-tuning (~2e-5)
+num_train_epochs: 2
+per_device_train_batch_size: 2
+gradient_accumulation_steps: 4     # effective batch: 2 x 4 = 8 examples per update
+max_length: 1024                   # tokens; prompts with 5 passages are ~400-600
+eval_strategy: epoch
+save_strategy: epoch
+save_total_limit: 1
+logging_steps: 5
+use_cpu: true                      # LLM training on Apple's MPS crashed/hung; on a CUDA GPU remove this line
+bf16: false                        # TRL defaults assume an NVIDIA GPU; on CPU 16-bit and
+gradient_checkpointing: false      # gradient checkpointing made training far slower
+report_to: none
+seed: 42

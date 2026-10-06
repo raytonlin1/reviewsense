@@ -21,7 +21,7 @@ def contains_answer(text: str, accepted: list[str]) -> bool:
 def score_answers(assistant) -> dict:
     gold = load("qa_gold.yaml") | load("opinion_gold.yaml")
     correct = supported = answerable = 0
-    mistakes = []
+    mistakes, per_question = [], []
     start = time.time()
     for question, accepted in gold.items():
         result = assistant.ask(question)
@@ -32,6 +32,7 @@ def score_answers(assistant) -> dict:
             ok = not result["declined"] and contains_answer(result["answer"], accepted)
             if ok and any(contains_answer(source.content, accepted) for source in result["sources"]):
                 supported += 1
+        per_question.append(ok)
         if ok:
             correct += 1
         else:
@@ -39,7 +40,7 @@ def score_answers(assistant) -> dict:
     return {"accuracy": round(correct / len(gold), 3),
             "supported_by_citation": round(supported / answerable, 3),
             "seconds_per_answer": round((time.time() - start) / len(gold), 1),
-            "mistakes": mistakes}
+            "mistakes": mistakes, "per_question": per_question}
 
 
 def score_llm_summaries(assistant) -> dict:

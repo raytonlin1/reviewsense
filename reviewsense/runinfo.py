@@ -35,7 +35,8 @@ def as_dict(config) -> dict:
     return asdict(config)
 
 
-def write_run_record(out_dir: str | Path, configs: dict, metrics: dict, labels: np.ndarray, preds: np.ndarray) -> None:
+def write_run_record(out_dir: str | Path, configs: dict, metrics: dict,
+                     labels: np.ndarray | None = None, preds: np.ndarray | None = None) -> None:
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
     record = {
@@ -48,4 +49,5 @@ def write_run_record(out_dir: str | Path, configs: dict, metrics: dict, labels: 
         "metrics": metrics,
     }
     (out / "run.json").write_text(json.dumps(record, indent=2, default=str))
-    (out / "eval.json").write_text(json.dumps({**metrics, "preds": preds.tolist(), "gold": labels.tolist()}))
+    if labels is not None and preds is not None:                # classifiers: per-example predictions for the gate
+        (out / "eval.json").write_text(json.dumps({**metrics, "preds": preds.tolist(), "gold": labels.tolist()}))

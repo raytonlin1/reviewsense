@@ -64,11 +64,13 @@ def citations(answer: str, documents: list) -> list:
     return cited
 
 
-def load_llm() -> TransformersChatGenerator:
-    """The local LLM, loaded once and shared (it takes a few GB of memory). do_sample=False: the same question always
-    gets the same answer (testable, reproducible)."""
+def load_llm(model: str | None = None) -> TransformersChatGenerator:
+    """The local LLM (settings.llm_model unless another is given), loaded once and shared: it takes a few GB of
+    memory. do_sample=False: the same question always gets the same answer (testable, reproducible)."""
     settings = get_settings()
-    llm = TransformersChatGenerator(model=settings.llm_model, generation_kwargs={
+    # task given explicitly: otherwise Haystack asks the Hugging Face Hub what the model is, which fails for a local
+    # folder (our fine-tuned models) and costs a network call at every start.
+    llm = TransformersChatGenerator(model=model or settings.llm_model, task="text-generation", generation_kwargs={
         "max_new_tokens": settings.max_answer_tokens, "do_sample": False})
     llm.warm_up()                                       # load the model now, not on the first question
     return llm

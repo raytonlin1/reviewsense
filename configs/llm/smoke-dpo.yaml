@@ -1,0 +1,19 @@
+# A seconds-long end-to-end check of the DPO path. Runs on the smoke SFT model.
+model_name_or_path: artifacts/llm-smoke-sft
+use_peft: true
+lora_r: 4
+lora_alpha: 8
+lora_target_modules: [all-linear]
+data_file: artifacts/llm-data/dpo.jsonl
+export_dir: artifacts/llm-smoke-dpo
+output_dir: artifacts/checkpoints/llm-smoke-dpo
+max_steps: 2
+per_device_train_batch_size: 1
+max_length: 512
+eval_strategy: "no"
+save_strategy: "no"
+use_cpu: true
+bf16: false
+gradient_checkpointing: false
+report_to: none
+seed: 42

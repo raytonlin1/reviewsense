@@ -1,7 +1,7 @@
 # ReviewSense
 
 A conversational NLP system for customer reviews, built part by part with the libraries companies use
-(Hugging Face, spaCy, scikit-learn, Haystack). This repository currently contains **Parts 0–10**.
+(Hugging Face, spaCy, scikit-learn, Haystack). This repository currently contains **Parts 0–11**.
 
 ## Setup (Python 3.14)
 ```bash
@@ -37,3 +37,4 @@ e.g. `--learning_rate 3e-5`.
 | `reviewsense/rag/` | 9: LLM answers and summaries from retrieved reviews, with citations (RAG) | `rag_demo.py` |
 | `reviewsense/safety/` | 10: personal data removal, injection and harm guard, fact check, red team | `safety_demo.py` |
 | `reviewsense/chat/` | Conversations with LangChain + LangGraph: chat memory, follow-up questions | `chat_demo.py` |
+| `reviewsense/finetune/`, `configs/llm/` | 11: distillation data, LoRA SFT and DPO of a small LLM, model comparison | `finetune_demo.py` |

@@ -42,3 +42,5 @@ presidio-anonymizer>=2.2.360,<3       # replaces it with <TYPE>
 langchain-core>=1.6,<2                # prompt templates, chains (runnables), chat history
 langchain-huggingface>=1.2,<2         # LangChain chat model over a local Hugging Face pipeline
 langgraph>=1.2,<2                     # the conversation graph (guard -> resolve -> answer) and its memory
+# ---- Part 11: fine-tuning (trl and accelerate are listed under Parts 0-2)
+peft>=0.21,<1                         # LoRA adapters

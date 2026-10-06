@@ -1,0 +1,26 @@
+# DPO on top of the SFT model, on preference pairs (artifacts/llm-data/dpo.jsonl), with a new LoRA.
+model_name_or_path: artifacts/qwen3-0.6b-sft
+use_peft: true
+lora_r: 16
+lora_alpha: 32
+lora_dropout: 0.05
+lora_target_modules: [all-linear]
+data_file: artifacts/llm-data/dpo.jsonl     # on-policy pairs: python -m reviewsense.finetune.build_pairs
+max_refusal_fraction: 0.25
+export_dir: artifacts/qwen3-0.6b-dpo
+output_dir: artifacts/checkpoints/qwen3-0.6b-dpo
+beta: 0.1                          # how far the model may move from the SFT model (smaller = further)
+learning_rate: 2.0e-5              # preference tuning uses a much smaller step than SFT
+num_train_epochs: 1                # each step compares chosen vs. rejected against a reference: ~3x the cost of SFT
+per_device_train_batch_size: 2
+gradient_accumulation_steps: 4
+max_length: 1024
+eval_strategy: epoch
+save_strategy: epoch
+save_total_limit: 1
+logging_steps: 5
+use_cpu: true
+bf16: false
+gradient_checkpointing: false
+report_to: none
+seed: 42
