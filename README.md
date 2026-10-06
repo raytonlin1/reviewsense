@@ -36,3 +36,4 @@ e.g. `--learning_rate 3e-5`.
 | `reviewsense/nlp/` | 8: review highlights (LexRank), question answering (extractive reader), translation | `nlp_demo.py` |
 | `reviewsense/rag/` | 9: LLM answers and summaries from retrieved reviews, with citations (RAG) | `rag_demo.py` |
 | `reviewsense/safety/` | 10: personal data removal, injection and harm guard, fact check, red team | `safety_demo.py` |
+| `reviewsense/chat/` | Conversations with LangChain + LangGraph: chat memory, follow-up questions | `chat_demo.py` |

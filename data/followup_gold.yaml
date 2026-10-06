@@ -1,0 +1,50 @@
+# Follow-up questions in a conversation. The earlier answers are real assistant replies (with citations, as users
+# see them): short tidy answers here hid bugs that real conversations showed. After resolving, the question plus
+# the restaurant used for the search must contain every `must_include` phrase and none of the `must_exclude` ones.
+- history:
+    - ["Is Bella Napoli expensive?", "Review [3] mentions that Bella Napoli is overpriced for the portion size."]
+  question: What about their pizza?
+  must_include: [Bella Napoli, pizza]
+- history:
+    - ["How long did people wait for a table at Golden Dragon?", "The reviews indicate that people waited 45 minutes for a table at Golden Dragon Noodle House on Saturday. The review [1] states this fact directly."]
+  question: Was the food worth it?
+  must_include: [Golden Dragon, food]
+- history:
+    - ["Tell me about Sunrise Cafe.", "Review [1] says Sunrise Cafe has the fluffiest pancakes and strong coffee. Review [4] mentions that the coffee was bitter and the line was slow."]
+  question: Is it good for working on a laptop?
+  must_include: [Sunrise Cafe, laptop]
+- history:
+    - ["Is Taqueria El Sol clean?", "Review [2] mentions that the dining room was dirty and the tables were sticky, indicating that the place is not clean."]
+  question: And the staff?
+  must_include: [Taqueria El Sol, staff]
+- history:
+    - ["Who is the chef at Golden Dragon?", "The chef's name at Golden Dragon Noodle House is Li Wei, as mentioned in review [2]."]
+  question: What did he recommend?
+  must_include: [Li Wei]
+- history:
+    - ["Is Bella Napoli expensive?", "Review [3] mentions that Bella Napoli is overpriced for the portion size."]
+    - ["What about their pizza?", "Review [1] says Bella Napoli serves the best wood-fired pizza in Seattle with a crispy crust and fresh mozzarella. Review [3] mentions a terrible experience with a cold, soggy pizza and a rude manager."]
+  question: Is parking easy there?
+  must_include: [Bella Napoli, parking]
+- history:
+    - ["Is Bella Napoli expensive?", "Review [3] mentions that Bella Napoli is overpriced for the portion size."]
+  question: Is the coffee strong at Sunrise Cafe?
+  must_include: [Sunrise Cafe, coffee]
+  must_exclude: [Bella Napoli]
+- history:
+    - ["Is Bella Napoli expensive?", "Review [3] mentions that Bella Napoli is overpriced for the portion size."]
+    - ["Is parking easy there?", "Review [2] says that parking near Pike Street is a nightmare."]
+  question: Where can I get spicy soup?
+  must_include: [spicy soup]
+  must_exclude: [Bella Napoli]
+- history:
+    - ["Is Bella Napoli expensive?", "Review [3] mentions that Bella Napoli is overpriced for the portion size."]
+    - ["Is parking easy there?", "Review [2] says that parking near Pike Street is a nightmare. [1] (Bella Napoli Pizzeria) Bella Napoli serves the best wood-fired pizza in Seattle. (Bella Napoli Pizzeria) Terrible experience. The pizza was cold and soggy."]
+  question: Where can I get spicy soup?
+  must_include: [spicy soup]
+  must_exclude: [Bella Napoli]
+- history:
+    - ["Is Bella Napoli expensive?", "Review [3] mentions that Bella Napoli is overpriced for the portion size."]
+    - ["What about their pizza?", "Review [1] says Bella Napoli serves the best wood-fired pizza in Seattle. [1] (Bella Napoli Pizzeria) Bella Napoli serves the best wood-fired pizza in Seattle. (Bella Napoli Pizzeria) Terrible experience."]
+  question: Is parking easy there?
+  must_include: [Bella Napoli, parking]
