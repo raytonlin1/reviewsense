@@ -10,6 +10,9 @@
 spaCy's general NER was measured first and missed short booking phrases ("Saturday at 8" -> no time, 8 people;
 "next Thursday" -> nothing), so these are explicit rules: what chatbot frameworks do too (e.g. Rasa with Duckling).
 A bare answer ("3", "8") is understood from the question the bot just asked (`expecting`).
+Spoken input (Part 13) is written differently from typed input: speech recognition wrote "at eight" and "8 p.m.",
+which the rules missed (the bot asked "At what time?" again). Number words up to twelve become digits and "p.m."
+becomes "pm" before the rules run.
 """
 from __future__ import annotations
 
@@ -84,9 +87,17 @@ def find_party_size(text: str) -> int | None:
     return None
 
 
+def with_digits(text: str) -> str:
+    """"for two at eight p.m." -> "for 2 at 8 pm" """
+    text = re.sub(r"\b([ap])\.m\.?", r"\1m", text)
+    for word, number in NUMBER_WORDS.items():
+        text = re.sub(rf"\b{word}\b", str(number), text)
+    return text
+
+
 def extract_slots(text: str, expecting: str | None = None, now: datetime | None = None) -> dict:
     """Only the slots found in this message. `expecting`: the slot the bot just asked for."""
-    lowered = text.lower().strip().rstrip(".!")
+    lowered = with_digits(text.lower().strip().rstrip(".!"))
     slots = {}
     business = mentioned_business(text)
     if business:

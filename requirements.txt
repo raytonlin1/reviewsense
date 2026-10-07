@@ -47,3 +47,9 @@ peft>=0.21,<1                         # LoRA adapters
 # ---- Part 12: chatbot
 setfit>=1.2,<2                        # few-shot intent classification
 dateparser>=1.4,<2                    # "next Friday", "tomorrow" -> dates
+# ---- Part 13: speech
+faster-whisper>=1.2,<2                # speech to text (Whisper on CTranslate2, int8 on CPU)
+av>=15,<19                            # audio decoding for faster-whisper 1.2.1: av 19 removed an option it uses
+soundfile>=0.13,<1                    # read and write audio files
+jiwer>=4.0,<5                         # word error rate
+num2words>=0.5,<1                     # "4" -> "four" before speaking

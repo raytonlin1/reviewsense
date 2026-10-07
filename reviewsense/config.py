@@ -58,6 +58,11 @@ class Settings(BaseSettings):
     # ---- chatbot (Part 12)
     intent_model: str = "artifacts/intent-model"   # trained by python -m reviewsense.chat.intents
 
+    # ---- speech (Part 13)
+    stt_model: str = "small.en"               # faster-whisper: tiny.en, base.en, small.en, medium.en, large-v3
+                                              # small.en vs base.en: names right 100% vs 90%, WER 4.6% vs 7.3%
+    tts_model: str = "facebook/mms-tts-eng"   # VITS text-to-speech (Meta's Massively Multilingual Speech)
+
 
 @lru_cache
 def get_settings() -> Settings:

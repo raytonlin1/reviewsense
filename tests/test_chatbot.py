@@ -26,6 +26,10 @@ WEDNESDAY = datetime(2026, 10, 7, 12, 0)
     ("8", None, {}),
     ("for 40 people", None, {}),                                              # above the party-size limit
     ("I want to reserve a table", None, {}),
+    ("book a table at Bella Napoli for two on Friday at eight", None,                 # as speech recognition writes it
+     {"business": "Bella Napoli Pizzeria", "date": "2026-10-09", "time": "20:00", "party_size": 2}),
+    ("Friday at 8 p.m.", None, {"date": "2026-10-09", "time": "20:00"}),
+    ("eight", "time", {"time": "20:00"}),
 ])
 def test_slots(text, expecting, slots):
     assert extract_slots(text, expecting=expecting, now=WEDNESDAY) == slots

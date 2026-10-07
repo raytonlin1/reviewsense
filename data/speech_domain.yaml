@@ -1,0 +1,19 @@
+# Spoken questions about our restaurants (names and dishes Whisper has rarely heard). Used for the round trip
+# text -> speech (TTS) -> text (STT): how many words come back right, and does the restaurant name survive?
+- {text: "Is Taqueria El Sol clean?", business: Taqueria El Sol}
+- {text: "Book a table at Golden Dragon Noodle House for two tomorrow at seven.", business: Golden Dragon Noodle House}
+- {text: "Are the carnitas at Taqueria El Sol any good?", business: Taqueria El Sol}
+- {text: "Does Bella Napoli Pizzeria have a patio?", business: Bella Napoli Pizzeria}
+- {text: "How strong is the coffee at Sunrise Cafe?", business: Sunrise Cafe}
+- {text: "Is the salsa verde spicy?", business: null}
+- {text: "Summarize Bella Napoli for me.", business: Bella Napoli Pizzeria}
+- {text: "What does Golden Dragon serve besides dumplings?", business: Golden Dragon Noodle House}
+- {text: "I would like the al pastor tacos recommendation from El Sol.", business: Taqueria El Sol}
+- {text: "Are the pancakes at Sunrise Cafe fluffy?", business: Sunrise Cafe}
+# Short replies in a booking dialog: no restaurant may be "heard" in them (with hotwords, a spoken "yes" once came
+# back as "Pizzeria El Sol").
+- {text: "yes", business: null}
+- {text: "no thanks", business: null}
+- {text: "yes please", business: null}
+- {text: "for four people", business: null}
+- {text: "eight p m", business: null}
