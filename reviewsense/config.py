@@ -63,6 +63,11 @@ class Settings(BaseSettings):
                                               # small.en vs base.en: names right 100% vs 90%, WER 4.6% vs 7.3%
     tts_model: str = "facebook/mms-tts-eng"   # VITS text-to-speech (Meta's Massively Multilingual Speech)
 
+    # ---- serving (Part 14)
+    star_onnx_dir: Path = ROOT / "artifacts" / "stars-onnx"   # the star model as ONNX (fp32 and int8)
+    serve_chat: bool = True                   # load the chatbot (LLM, several GB) in the API; off = stars + search only
+    max_text_length: int = 5000               # characters accepted per text by the API
+
 
 @lru_cache
 def get_settings() -> Settings:

@@ -1,0 +1,10 @@
+# Keep the image small and free of secrets: only code, data and requirements go in.
+.git
+.venv*
+.env
+artifacts
+checkpoints
+**/__pycache__
+.pytest_cache
+tests
+*_demo.py
