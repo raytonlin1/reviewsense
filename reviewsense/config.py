@@ -55,6 +55,9 @@ class Settings(BaseSettings):
     injection_model: str = "protectai/deberta-v3-base-prompt-injection-v2"
     fact_threshold: float = 0.5               # minimum support for an answer sentence to be shown
 
+    # ---- chatbot (Part 12)
+    intent_model: str = "artifacts/intent-model"   # trained by python -m reviewsense.chat.intents
+
 
 @lru_cache
 def get_settings() -> Settings:

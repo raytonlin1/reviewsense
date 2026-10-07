@@ -44,3 +44,6 @@ langchain-huggingface>=1.2,<2         # LangChain chat model over a local Huggin
 langgraph>=1.2,<2                     # the conversation graph (guard -> resolve -> answer) and its memory
 # ---- Part 11: fine-tuning (trl and accelerate are listed under Parts 0-2)
 peft>=0.21,<1                         # LoRA adapters
+# ---- Part 12: chatbot
+setfit>=1.2,<2                        # few-shot intent classification
+dateparser>=1.4,<2                    # "next Friday", "tomorrow" -> dates

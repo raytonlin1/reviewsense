@@ -1,0 +1,38 @@
+# Held-out intent test set: different wording from data/intents.yaml, never used for training.
+ask_reviews:
+  - What's the atmosphere like at the restaurant?
+  - Any complaints about the staff?
+  - Is the food at the restaurant fresh?
+  - Do they have good desserts?
+  - How noisy is it?
+  - Is the restaurant good for families?
+summarize:
+  - Give me the highlights for the restaurant
+  - Overall, is the restaurant well reviewed?
+  - Brief me on the restaurant
+  - What's the verdict on the restaurant?
+book_table:
+  - Can you reserve a spot for 6 at the restaurant?
+  - I need a table next Thursday
+  - Book us in for dinner at 7:30
+  - Please set up a reservation for two
+greet:
+  - yo
+  - hiya
+  - good evening
+thanks_bye:
+  - cheers, bye
+  - great, thanks a lot
+  - that's everything, goodbye
+help:
+  - what are you for?
+  - can you explain what you do?
+  - options?
+affirm:
+  - yeah
+  - absolutely
+  - yes, that's correct
+deny:
+  - nah
+  - no, stop
+  - not that
