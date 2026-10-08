@@ -31,7 +31,7 @@ class ReviewQA:
 
     def ask(self, question: str, business: str | None = None) -> dict:
         found = self.engine.search(question, business=business)
-        query = found["corrected"] or question #This line uses the corrected query if available, otherwise it uses the original question.
+        query = found["corrected"] or question 
         passages = found["reranked"][:self.passages]
         # Answers come sorted by confidence. One of them is the model's "no answer" option (data=None).
         best = self.reader.run(query=query, documents=passages)["answers"][0]
