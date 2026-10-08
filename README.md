@@ -1,7 +1,7 @@
 # ReviewSense
 
 A conversational NLP system for customer reviews, built part by part with the libraries companies use
-(Hugging Face, spaCy, scikit-learn, Haystack). This repository currently contains **Parts 0–14**.
+(Hugging Face, spaCy, scikit-learn, Haystack). All parts (0–15) are in this repository.
 
 ## Setup (Python 3.14)
 ```bash
@@ -47,3 +47,25 @@ e.g. `--learning_rate 3e-5`.
 python -m reviewsense.serving.onnx_model export      # once: the star model as ONNX / INT8
 uvicorn reviewsense.serving.api:app --port 8000      # API docs: http://localhost:8000/docs, web page: /ui
 ```
+| `experiments/` | 2 and 15: release gate (McNemar, bootstrap) and A/B tests (power, assignment, SRM, Holm) | `experiments_demo.py` |
+
+## Results (all measured in this repository; how each was measured is in the module docstrings)
+| Part | Task | Result |
+|---|---|---|
+| 2 | Star rating (Yelp, 2k test reviews) | TF-IDF 57.3% -> DistilBERT 61.0% accuracy (+3.7 points, 95% CI [+1.3, +6.0], McNemar p = 0.003) |
+| 5 | Named entities (hand-labelled reviews) | F1 0.19 (standard spaCy) -> 0.88 (rules + catalog) -> 0.93 (+ short names) |
+| 6 | Fact extraction for the knowledge graph | F1 0.97 |
+| 7 | Search (hand-labelled queries) | nDCG@5 0.77 (BM25) -> 0.93 (hybrid + reranker), MRR 1.0 |
+| 8 | Extractive QA with "no answer" | 8/14 -> 13/14 correct (passage count and confidence threshold tuned) |
+| 8 | Translation to English | chrF 70 -> 88 (per-language models instead of one multilingual model) |
+| 9 | RAG answers with citations (21 questions) | 90% correct, every correct answer backed by a cited review |
+| 10 | Safety: fact check / input guard | 8/8 unsupported claims caught; held-out attacks 89% blocked, 0% normal questions blocked |
+| chat | Follow-up questions in conversations | 80% -> 100% resolved (rewrite check + restaurant memory) |
+| 11 | Fine-tuned Qwen3-0.6B (LoRA SFT on distilled, fact-checked answers) | 86% correct, unsupported sentences 44% -> 11%, 3x faster than the 1.7B teacher (90%, 59%) |
+| 12 | Intents (SetFit) / booking dialogs | 90% vs 69% TF-IDF; 100% turn accuracy, 100% booking success |
+| 13 | Speech recognition (faster-whisper small.en) | 4.6% WER on LibriSpeech; restaurant names right 15/15 (11/15 without vocabulary) |
+| 14 | Serving the star model | ONNX 2x faster (8.7 vs 16.1 ms); INT8 4x smaller (67 MB), same accuracy (p = 0.40) |
+| 15 | A/B testing (simulated) | Daily peeking: 23% false wins vs 6% when analyzed once at the planned size |
+
+Small test sets (10-30 items) were used for several parts: their numbers show direction, and several differences
+were tested and found not significant (noted in the code). Real traffic would need larger sets.
