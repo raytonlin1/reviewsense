@@ -3,13 +3,76 @@
 A conversational NLP system for customer reviews, built part by part with the libraries companies use
 (Hugging Face, spaCy, scikit-learn, Haystack). All parts (0–15) are in this repository.
 
-## Setup (Python 3.14)
+## Use it locally
+
+### What you need
+- macOS (tested on Apple silicon) or Linux, with **Python 3.14**
+- **16 GB of RAM** for the chatbot (it runs a 1.7B-parameter LLM on the CPU); 8 GB is enough without the chatbot
+- **~15 GB of free disk** for the models, which are downloaded from Hugging Face the first time they are used
+
+### 1. Install (once)
 ```bash
-python3.14 -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt && python -m spacy download en_core_web_sm
-python -m pytest                  # fast tests (seconds)
-python -m pytest -m integration   # tests that download and run real models (minutes)
+git clone <this repository> reviewsense && cd reviewsense
+python3.14 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python -m spacy download en_core_web_sm
+python -m pytest                   # fast tests: should all pass in seconds
 ```
+Use the project's `.venv` Python for everything. If conda is installed, run `conda deactivate` first: conda's
+OpenMP library clashes with PyTorch's and crashes the process ("OMP: Error #15").
+
+### 2. Prepare the models (once)
+```bash
+python -m reviewsense.chat.intents                   # chatbot intent classifier (~20 s)
+python -m reviewsense.serving.onnx_model export      # star-rating model as ONNX / INT8, used by the web app
+```
+The star rating uses a public model (`nlptown/bert-base-multilingual-uncased-sentiment`) unless you train your own
+(see "Train and gate a model" below) and point the settings at it (step 5). Everything else downloads by itself.
+
+### 3. Open the web app
+```bash
+uvicorn reviewsense.serving.api:app --port 8000
+```
+Wait for `Application startup complete.` in the log (~20 s; the first run also downloads the models), then open:
+- **http://localhost:8000/ui**: the web page, with a **Chat** tab (questions about the restaurants with cited
+  reviews, summaries, table bookings), a **Star rating** tab and a **Search** tab
+- **http://localhost:8000/docs**: the API (`/stars`, `/search`, `/chat`), callable from the browser
+
+Without the chatbot (half the memory, faster start): `REVIEWSENSE_SERVE_CHAT=false uvicorn reviewsense.serving.api:app --port 8000`.
+`python serve_demo.py` starts the same server and shows example API calls first.
+
+### 4. Try each feature from the command line
+Each part has a demo script that prints what it does and ends with a prompt to try your own input:
+```bash
+python chatbot_demo.py        # the chatbot: questions, summaries, booking a table
+python search_demo.py         # hybrid search with typo correction
+python rag_demo.py            # LLM answers with citations
+python safety_demo.py         # personal data removal, attack blocking, fact check
+python voice_demo.py          # speech in and out; or: python voice_demo.py my_question.m4a
+python analyze_demo.py        # stars, emotions and aspect sentiment per restaurant
+```
+The full list is in the Layout table below. Most commands take 10-60 s the first time (model loading).
+
+### 5. Settings (optional)
+Settings are environment variables starting with `REVIEWSENSE_`, or lines in a `.env` file in the project root:
+```bash
+REVIEWSENSE_SENTIMENT_MODEL=/full/path/to/artifacts/distilbert-20k   # your trained star model (then re-run the ONNX export)
+REVIEWSENSE_LLM_MODEL=artifacts/qwen3-0.6b-sft                        # the faster fine-tuned LLM from Part 11
+REVIEWSENSE_SERVE_CHAT=false                                          # web app without the chatbot
+REVIEWSENSE_YELP_REVIEWS=/path/to/yelp_academic_dataset_review.json   # use the Yelp Open Dataset instead of the
+REVIEWSENSE_YELP_BUSINESSES=/path/to/yelp_academic_dataset_business.json   # 12 sample reviews in data/
+```
+All settings, with their defaults, are in `reviewsense/config.py`.
+
+### Troubleshooting
+| Problem | Fix |
+|---|---|
+| `OMP: Error #15` or `Fatal Python error: Aborted` | `conda deactivate`, then `source .venv/bin/activate` and run again |
+| A model download stops making progress | `export HF_HUB_DISABLE_XET=1` and run again (downloads resume) |
+| `No such file ... artifacts/intent-model` or `stars-onnx` | Run the two commands in step 2 |
+| The chat is slow or the machine runs out of memory | `REVIEWSENSE_LLM_MODEL=artifacts/qwen3-0.6b-sft` (after Part 11), or `REVIEWSENSE_SERVE_CHAT=false` |
+| `python -m pytest -m integration` takes long | Expected: it downloads and runs every model (minutes) |
 
 ## Train and gate a model (Part 2)
 ```bash
@@ -41,13 +104,12 @@ e.g. `--learning_rate 3e-5`.
 | `reviewsense/chat/` (`intents`, `slots`, `dialog`, `bookings`) | 12: chatbot: intents (SetFit), slots, dialog manager, table booking | `chatbot_demo.py` |
 | `reviewsense/speech/` | 13: speech to text (faster-whisper + hotwords), text to speech (VITS), voice assistant, WER | `voice_demo.py` |
 | `reviewsense/serving/`, `Dockerfile` | 14: FastAPI service, Gradio page at /ui, ONNX INT8 star model, container | `serve_demo.py` |
-
-## Serve it
-```bash
-python -m reviewsense.serving.onnx_model export      # once: the star model as ONNX / INT8
-uvicorn reviewsense.serving.api:app --port 8000      # API docs: http://localhost:8000/docs, web page: /ui
-```
 | `experiments/` | 2 and 15: release gate (McNemar, bootstrap) and A/B tests (power, assignment, SRM, Holm) | `experiments_demo.py` |
+
+## Online demo
+The star-rating API runs on Vercel: https://reviewsense-stars.vercel.app/docs (see `deploy/vercel/`). The full app
+(chatbot, search, speech) needs more memory than Vercel functions have, so it runs locally (above) or in a container
+(`Dockerfile`).
 
 ## Results (all measured in this repository; how each was measured is in the module docstrings)
 | Part | Task | Result |
