@@ -3,3 +3,5 @@ artifacts/
 __pycache__/
 .pytest_cache/
 .env
+.vercel
+deploy/vercel/model/

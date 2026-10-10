@@ -1,0 +1,3 @@
+# Upload only the app and the model (Vercel ignores .gitignore when deploying with the CLI).
+__pycache__
+README.md

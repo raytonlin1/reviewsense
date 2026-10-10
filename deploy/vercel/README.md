@@ -1,0 +1,24 @@
+# Star-rating API on Vercel
+
+The Part 14 INT8 star model as a small FastAPI app: only FastAPI, ONNX Runtime and the tokenizer library (~180 MB
+installed plus the 65 MB model, under Vercel's 500 MB limit for Python). The full ReviewSense app (chatbot, search,
+speech) needs more memory than Vercel functions have (2-4 GB); see the main README.
+
+## Deploy
+From the repository root:
+```bash
+python -m reviewsense.serving.onnx_model export      # only if artifacts/stars-onnx doesn't exist yet
+cp artifacts/stars-onnx/model-int8.onnx artifacts/stars-onnx/tokenizer.json deploy/vercel/model/
+cd deploy/vercel
+vercel login
+vercel              # preview deployment: prints a URL
+vercel --prod       # production
+```
+The model files are not in git (65 MB); the copy step puts them in this folder, and the CLI uploads them.
+
+## Use
+```bash
+curl -X POST https://YOUR-PROJECT.vercel.app/stars -H "Content-Type: application/json" \
+     -d '{"texts": ["Best tacos in town!", "Cold pizza, rude manager."]}'
+```
+Interactive docs: `https://YOUR-PROJECT.vercel.app/docs`

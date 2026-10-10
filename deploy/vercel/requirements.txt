@@ -1,0 +1,5 @@
+# Only what the star-rating API needs: no PyTorch or transformers (they would not fit Vercel's 500 MB limit).
+fastapi>=0.140,<1
+onnxruntime>=1.25,<2
+tokenizers>=0.22,<1
+numpy>=2.4,<3
