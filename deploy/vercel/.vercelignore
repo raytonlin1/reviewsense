@@ -1,3 +1,6 @@
 # Upload only the app and the model (Vercel ignores .gitignore when deploying with the CLI).
 __pycache__
 README.md
+# Local credentials and link files written by the CLI (.env.local holds a VERCEL_OIDC_TOKEN): never upload them.
+.env*
+.vercel

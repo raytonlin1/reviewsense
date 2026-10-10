@@ -18,6 +18,15 @@ The model files are not in git (65 MB); the copy step puts them in this folder, 
 `vercel.json` sets the framework to FastAPI. Without it, a project created as "Other" deploys an empty static site:
 the build takes a few seconds, no Python function is created, and every URL returns 404 NOT_FOUND.
 
+If `vercel` fails with **Request Entity Too Large**, it is uploading the whole repository (models: ~12 GB; the Hobby
+plan allows 100 MB per CLI upload). That happens when the CLI links the git repository instead of this folder
+(a `.vercel/repo.json` at the repository root). Remove that link and link this folder only:
+```bash
+rm -rf ../../.vercel                                  # the repository-level link (local files only)
+vercel link --project reviewsense-stars --yes         # run inside deploy/vercel
+vercel --prod
+```
+
 ## Use
 ```bash
 curl -X POST https://YOUR-PROJECT.vercel.app/stars -H "Content-Type: application/json" \
