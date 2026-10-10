@@ -15,6 +15,8 @@ vercel              # preview deployment: prints a URL
 vercel --prod       # production
 ```
 The model files are not in git (65 MB); the copy step puts them in this folder, and the CLI uploads them.
+`vercel.json` sets the framework to FastAPI. Without it, a project created as "Other" deploys an empty static site:
+the build takes a few seconds, no Python function is created, and every URL returns 404 NOT_FOUND.
 
 ## Use
 ```bash
