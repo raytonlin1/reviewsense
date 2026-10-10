@@ -1,7 +1,7 @@
 # ReviewSense
 
 A conversational NLP system for customer reviews, built part by part with the libraries companies use
-(Hugging Face, spaCy, scikit-learn, Haystack). All parts (0–15) are in this repository.
+(Hugging Face, spaCy, scikit-learn, Haystack). ReviewSense turns reviews (in any language, translated into English using encoder models) into business metrics (aspect sentiment, emotions, star prediction), searches them with a hybrid engine, answers questions with grounded RAG and a knowledge graph, and learns from 👍/👎 feedback with DPO. ReviewSense turns thousands of unstructured customer reviews into answers and business metrics. Users can ask "Is the service slow at Golden Dragon?" by voice in any language. The system transcribes and translates the question, identifies the intent, and retrieves evidence with hybrid search. It then answers with a small LLM grounded in cited reviews and checks the answer for hallucination. It also produces per-business dashboards of aspect-level sentiment and emotions. Every component, from attention to the dialog manager, is implemented and evaluated. User feedback is logged and used for preference tuning.
 
 ## Use it locally
 
