@@ -5,3 +5,4 @@ __pycache__/
 .env
 .vercel
 deploy/vercel/model/
+.env*
